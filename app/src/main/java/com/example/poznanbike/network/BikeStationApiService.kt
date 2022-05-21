@@ -8,8 +8,8 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-private const val BASE_URL = "https://www.poznan.pl/min/plan"
-private const val STATIONS_ENDPOINT = "map_service.html?mtype=pub_transportEco=stacje_rowerowe"
+private const val BASE_URL = "https://www.poznan.pl/mim/plan/"
+private const val STATIONS_ENDPOINT = "map_service.html?mtype=pub_transport&co=stacje_rowerowe"
 private const val QUERY_ENDPOINT = "map_service.html"
 
 private val moshi = Moshi.Builder()

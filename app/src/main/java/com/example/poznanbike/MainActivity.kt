@@ -32,25 +32,15 @@ class MainActivity : AppCompatActivity() {
             val navHostFragment: NavHostFragment? =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?
             if (navController.currentDestination?.id == R.id.listFragment) {
-
-            } else if (navController.currentDestination?.id == R.id.detailFragment) {
-
-            }
-        }
-
-        binding.fab.setOnClickListener {
-            val navHostFragment: NavHostFragment? =
-                supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?
-            if (navController.currentDestination?.id == R.id.listFragment) {
                 val listFragment: ListFragment? =
-                navHostFragment?.childFragmentManager?.primaryNavigationFragment as ListFragment?
+                    navHostFragment?.childFragmentManager?.primaryNavigationFragment as ListFragment?
 
                 listFragment?.clearList()
                 listFragment?.populateListFromInternet()
             } else if (navController.currentDestination?.id == R.id.detailFragment) {
+
             }
         }
-
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
