@@ -6,6 +6,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class BikeStations(
-    @Json(name = "items")
-    val bikeStations: List<BikeStation>
+    @Json(name = "features")
+    val items: List<BikeStation>
 )

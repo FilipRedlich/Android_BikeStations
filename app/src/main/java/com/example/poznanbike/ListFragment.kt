@@ -94,7 +94,7 @@ class ListFragment : Fragment() {
         try {
              bikeStations = GlobalScope.async {
                  withContext(Dispatchers.IO) {
-                     BikeStationApi.retrofitService.getBikeStations().bikeStations //powinno byc items zamiast bikeStations
+                     BikeStationApi.retrofitService.getBikeStations().items
                  }
              }.await()
 
@@ -110,7 +110,7 @@ class ListFragment : Fragment() {
                     BikeStationApi.retrofitService.getBikeStations(
                         "pub_transport",
                         "stacje_rowerowe"
-                    ).bikeStations
+                    ).items
                 }
             }.await()
 
