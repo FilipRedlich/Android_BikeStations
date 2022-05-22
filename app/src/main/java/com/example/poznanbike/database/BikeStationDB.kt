@@ -11,13 +11,13 @@ data class BikeStationDB (
     @ColumnInfo
     val freeRacks: Int,
     @ColumnInfo
-    val Label: String,
+    val label: String,
     @ColumnInfo
     val updated: String,
     @ColumnInfo
-    val Longitude: Double,
+    val longitude: Double,
     @ColumnInfo
-    val Latitude: Double,
+    val latitude: Double,
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0L
 )

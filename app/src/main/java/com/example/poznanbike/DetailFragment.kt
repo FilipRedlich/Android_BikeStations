@@ -7,8 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import com.example.poznanbike.bikestations.BikeStation
+import com.example.poznanbike.database.BikeStationDatabase
 import com.example.poznanbike.databinding.FragmentDetailBinding
-
+import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 
 class DetailFragment : Fragment() {
@@ -57,7 +62,27 @@ class DetailFragment : Fragment() {
             "Lat:" , latitude, "Lng:", longitude)
     }
 
-
+    fun saveToDatabase() {
+        val bikeStationDao =
+            BikeStationDatabase.getinstance(requireContext()).bikeStationDatabaseDao
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                val byLabel = bikeStationDao.getByLabel(args.bikeStation.properties.label)
+                val op = if (byLabel.isEmpty()) {
+                    bikeStationDao.insert(Helpers.createBikeStationDB(args.bikeStation))
+                    "Saved"
+                } else {
+                    bikeStationDao.update(Helpers.createBikeStationDB(args.bikeStation))
+                    "Updated"
+                }
+                Snackbar.make(
+                    binding.root,
+                    "$op ${args.bikeStation.properties.label}",
+                Snackbar.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package com.example.poznanbike
 
+import android.animation.Animator
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -9,7 +10,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.poznanbike.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), Animator.AnimatorListener {
     // view binding variable that allows for easy access to the Activities' Views
     private lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
@@ -27,6 +28,8 @@ class MainActivity : AppCompatActivity() {
             invalidateOptionsMenu()
         })
 
+        binding. fab .addOnHideAnimationListener(this)
+
         binding.fab.setOnClickListener {
             // placeholder for the FAB click event implementation
             val navHostFragment: NavHostFragment? =
@@ -38,12 +41,20 @@ class MainActivity : AppCompatActivity() {
                 listFragment?.clearList()
                 listFragment?.populateListFromInternet()
             } else if (navController.currentDestination?.id == R.id.detailFragment) {
-
+                val detailFragment: DetailFragment? =
+                    navHostFragment?. childFragmentManager?.primaryNavigationFragment as DetailFragment?
+                detailFragment?.saveToDatabase()
             }
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    override fun onResume() {
+        super.onResume()
+        firstStart = false;
+    }
+
+
+        override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_main, menu)
         return true
@@ -84,5 +95,22 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return  super.onOptionsItemSelected(item)
+    }
+
+    override fun onAnimationStart(pO: Animator?) {
+    }
+    override fun onAnimationEnd(pO: Animator?) {
+        val currentDestination =
+            findNavController(R.id.nav_host_fragment_content_main).currentDestination
+        if (currentDestination?.id == R.id.listFragment) {
+            binding.fab.setImageDrawable(getDrawable(R.drawable.ic_baseline_update_24))
+        } else if (currentDestination?.id == R.id.detailFragment) {
+            binding.fab.setImageDrawable(getDrawable(R.drawable.ic_baseline_save_24))
+        }
+        binding.fab.show()
+    }
+    override fun onAnimationCancel(pO: Animator?) {
+    }
+    override fun onAnimationRepeat(p0: Animator?) {
     }
 }

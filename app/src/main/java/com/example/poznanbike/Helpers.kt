@@ -5,6 +5,7 @@ import android.os.Build
 import com.example.poznanbike.bikestations.BikeStation
 import com.example.poznanbike.bikestations.Geometry
 import com.example.poznanbike.bikestations.Properties
+import com.example.poznanbike.database.BikeStationDB
 
 
 // Set of helper functions that are common for entire project. A singleton pattern is used here,
@@ -20,7 +21,7 @@ object Helpers {
                                                 // color we first had to access resources
         }
     }
-    /*
+
     // Function that converts the BikeStation (Retrofit version) to BikeStationDB (database version)
     fun createBikeStationDB(bikeStation: BikeStation): BikeStationDB {
         return BikeStationDB(
@@ -57,7 +58,7 @@ object Helpers {
         }
         return arrayList
     }
-    */
+
 
 
 }
