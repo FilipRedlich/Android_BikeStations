@@ -8,13 +8,22 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.navigateUp
+import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.poznanbike.database.BikeStationDatabase
 import com.example.poznanbike.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity(), Animator.AnimatorListener {
     // view binding variable that allows for easy access to the Activities' Views
     private lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
     private var firstStart: Boolean = true
+    private lateinit var appBarConfiguration: AppBarConfiguration
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -46,6 +55,8 @@ class MainActivity : AppCompatActivity(), Animator.AnimatorListener {
                 detailFragment?.saveToDatabase()
             }
         }
+        appBarConfiguration = AppBarConfiguration(navController.graph)
+        setupActionBarWithNavController(navController, appBarConfiguration)
     }
 
     override fun onResume() {
@@ -78,23 +89,41 @@ class MainActivity : AppCompatActivity(), Animator.AnimatorListener {
             val navHostFragment: NavHostFragment? =
                 supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?
             // Perform actions for different menu options
+            val ListFragment: ListFragment? =
+                navHostFragment?.childFragmentManager?.primaryNavigationFragment as ListFragment?
+            ListFragment?.clearList()
+            val queryId: BikeStationDatabase.QUERYID
             when (item.itemId) {
                 R.id.get_all -> {
-
+                    queryId = BikeStationDatabase.QUERYID.GET_ALL
                 }
                 R.id.get_with_bikes -> {
-
+                    queryId = BikeStationDatabase.QUERYID.GET_STATIONS_WITH_BIKES
                 }
                 R.id.get_with_racks -> {
-
+                    queryId = BikeStationDatabase.QUERYID.GET_STATIONS_WITH_FREE_RACKS
                 }
                 R.id.clear -> {
-
+                    clearDB()
+                    return true
                 }
                 else -> return true
             }
+            ListFragment?.populateListFromDB(queryId)
         }
         return  super.onOptionsItemSelected(item)
+    }
+
+    private fun clearDB() {
+        // Get a hold to the BikeStationDatabase DAO
+        val bikeStationDao =
+            BikeStationDatabase.getInstance(applicationContext).bikeStationDatabaseDao
+        // In aa coroutine perform the clear operation
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                bikeStationDao.clear()
+            }
+        }
     }
 
     override fun onAnimationStart(pO: Animator?) {
@@ -112,5 +141,13 @@ class MainActivity : AppCompatActivity(), Animator.AnimatorListener {
     override fun onAnimationCancel(pO: Animator?) {
     }
     override fun onAnimationRepeat(p0: Animator?) {
+    }
+    override fun onSupportNavigateUp(): Boolean {
+        // Find the navController
+        val navController = findNavController(R.id.nav_host_fragment_content_main)
+        // call either the onSupportNavigateUp from the parent class or one specified
+        // in the appBarConfiguration variable
+        return navController.navigateUp(appBarConfiguration)
+                || super.onSupportNavigateUp()
     }
 }

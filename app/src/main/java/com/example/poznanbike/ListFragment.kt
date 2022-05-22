@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.poznanbike.bikestations.BikeStation
+import com.example.poznanbike.database.BikeStationDatabase
 import com.example.poznanbike.databinding.FragmentListBinding
 import com.example.poznanbike.network.BikeStationApi
 import com.google.android.material.snackbar.Snackbar
@@ -89,6 +90,50 @@ class ListFragment : Fragment() {
             }
         }
     }
+
+    fun populateListFromDB(queryId: BikeStationDatabase.QUERYID) {
+        binding.updateInfo.visibility = View.INVISIBLE
+        binding.progressBar.visibility = View.VISIBLE
+        GlobalScope.launch {
+            getBikeStationsFromRoom(queryId)
+            withContext(Dispatchers.Main) {
+                Snackbar.make(
+                    binding.root,
+                    "${bikeStations?.size} bike stations",
+                Snackbar.LENGTH_LONG
+                ).show()
+                if (bikeStations?.isNotEmpty() == true) {
+                    showList()
+                } else {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    binding.updateInfo.visibility = View.VISIBLE
+                }
+            }
+        }
+    }
+
+    private suspend fun getBikeStationsFromRoom(queryId: BikeStationDatabase.QUERYID) {
+        val bikeStationDao =
+            BikeStationDatabase.getInstance(requireContext()).bikeStationDatabaseDao
+        val async = GlobalScope.async {
+            withContext(Dispatchers.IO) {
+                when (queryId) {
+                    BikeStationDatabase.QUERYID.GET_STATIONS_WITH_BIKES -> {
+                        bikeStationDao.getStationsWithBikes(0)
+                    }
+                    BikeStationDatabase.QUERYID.GET_STATIONS_WITH_FREE_RACKS -> {
+                        bikeStationDao.getStationsWithFreeRacks(0)
+                    }
+                    BikeStationDatabase.QUERYID.GET_ALL -> {
+                        bikeStationDao.getAll()
+                    }
+                    else -> bikeStationDao.getAll()
+                }
+            }
+        }
+        bikeStations = Helpers.createBikeStationList(async.await()).toList()
+    }
+
 
     private suspend fun getBikeStationsFromRetrofit() {
         try {

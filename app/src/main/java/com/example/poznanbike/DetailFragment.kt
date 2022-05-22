@@ -64,7 +64,7 @@ class DetailFragment : Fragment() {
 
     fun saveToDatabase() {
         val bikeStationDao =
-            BikeStationDatabase.getinstance(requireContext()).bikeStationDatabaseDao
+            BikeStationDatabase.getInstance(requireContext()).bikeStationDatabaseDao
         GlobalScope.launch {
             withContext(Dispatchers.IO) {
                 val byLabel = bikeStationDao.getByLabel(args.bikeStation.properties.label)
